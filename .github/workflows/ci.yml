@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install BLE build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libdbus-1-dev pkg-config
+      - name: Test
+        run: cargo test
+      - name: Build
+        run: cargo build
+
+  flipper-app:
+    name: Flipper FAP
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: dev
+            sdk-channel: dev
+          - name: release
+            sdk-channel: release
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build FAP
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1.1
+        id: build-app
+        with:
+          app-dir: flipper-app
+          sdk-channel: ${{ matrix.sdk-channel }}
+      - name: Upload FAP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-monitor-${{ matrix.name }}-${{ steps.build-app.outputs.suffix }}
+          path: ${{ steps.build-app.outputs.fap-artifacts }}
+

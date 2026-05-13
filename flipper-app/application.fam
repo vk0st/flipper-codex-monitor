@@ -1,0 +1,14 @@
+App(
+    appid="codex_monitor",
+    name="Codex Monitor",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="codex_monitor_app",
+    requires=["bt", "gui"],
+    stack_size=1 * 1024,
+    fap_description="Desktop display for Codex account limits",
+    fap_category="Bluetooth",
+    fap_icon_assets="assets",
+    fap_icon="assets/icon_10px.png",
+    fap_version="0.1.0",
+    fap_author="vk0st",
+)

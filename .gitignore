@@ -1,0 +1,16 @@
+# Rust backend
+/backend/target/
+/backend/logs/
+**/*.rs.bk
+*.pdb
+
+# uFBT / Flipper app build output
+/flipper-app/dist/
+/flipper-app/.vscode/
+/flipper-app/.ufbt/
+
+# Local environment
+.env
+.DS_Store
+Thumbs.db
+
