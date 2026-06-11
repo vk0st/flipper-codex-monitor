@@ -1,4 +1,4 @@
-use btleplug::api::{Central, CentralEvent, Peripheral as _, ScanFilter};
+use btleplug::api::{Central, CentralEvent, Characteristic, Peripheral as _, ScanFilter};
 use btleplug::platform::{Adapter, Manager, Peripheral, PeripheralId};
 use flipper_codex_monitor_backend::codex_app_server::{self, CodexLimitsCache};
 use futures::stream::StreamExt;
@@ -8,18 +8,12 @@ use tokio::time::{self, Duration};
 
 mod flipper_manager;
 
-async fn data_sender(flipper: Peripheral, limits_cache: CodexLimitsCache) {
+async fn data_sender(
+    flipper: Peripheral,
+    cmd_char: Characteristic,
+    limits_cache: CodexLimitsCache,
+) {
     let id = flipper.id();
-    let chars = flipper.characteristics();
-    let cmd_char = match chars
-        .iter()
-        .find(|c| c.uuid == flipper_manager::FLIPPER_CHARACTERISTIC_UUID)
-    {
-        Some(c) => c,
-        None => {
-            return println!("[{}] Failed to find characteristic", id.to_string());
-        }
-    };
     println!("[{}] Sending data...", id.to_string());
 
     loop {
@@ -28,7 +22,7 @@ async fn data_sender(flipper: Peripheral, limits_cache: CodexLimitsCache) {
 
         if let Err(e) = flipper
             .write(
-                cmd_char,
+                &cmd_char,
                 &packet_bytes,
                 btleplug::api::WriteType::WithoutResponse,
             )
@@ -39,6 +33,38 @@ async fn data_sender(flipper: Peripheral, limits_cache: CodexLimitsCache) {
 
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     }
+}
+
+async fn find_serial_characteristic(flipper: &Peripheral) -> Option<Characteristic> {
+    let id = flipper.id();
+
+    for attempt in 1..=8 {
+        if let Err(e) = flipper.discover_services().await {
+            println!(
+                "[{}] Service discovery failed ({}/8): {}",
+                id.to_string(),
+                attempt,
+                e
+            );
+        }
+
+        if let Some(characteristic) = flipper
+            .characteristics()
+            .into_iter()
+            .find(|c| c.uuid == flipper_manager::FLIPPER_CHARACTERISTIC_UUID)
+        {
+            return Some(characteristic);
+        }
+
+        println!(
+            "[{}] Waiting for Flipper serial characteristic ({}/8)",
+            id.to_string(),
+            attempt
+        );
+        tokio::time::sleep(Duration::from_millis(750)).await;
+    }
+
+    None
 }
 
 async fn reconnect_thread(central: Adapter, id: PeripheralId) {
@@ -102,14 +128,25 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
                     }
                     CentralEvent::DeviceConnected(id) => {
                         if let Some(flp) = flipper_manager::get_flipper(&central, &id).await {
-                            flp.discover_services().await?;
                             println!("[{}] Connected to Flipper", &id.to_string());
 
                             if !data_workers.contains_key(&id) {
-                                data_workers.insert(
-                                    id.clone(),
-                                    tokio::spawn(data_sender(flp, limits_cache.clone())),
-                                );
+                                if let Some(cmd_char) = find_serial_characteristic(&flp).await {
+                                    data_workers.insert(
+                                        id.clone(),
+                                        tokio::spawn(data_sender(
+                                            flp,
+                                            cmd_char,
+                                            limits_cache.clone(),
+                                        )),
+                                    );
+                                } else {
+                                    println!(
+                                        "[{}] Failed to find Flipper serial characteristic",
+                                        id.to_string()
+                                    );
+                                    let _ = flp.disconnect().await;
+                                }
                             }
                         };
 
