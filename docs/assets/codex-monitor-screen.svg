@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img" aria-labelledby="title desc">
+  <title id="title">Codex Monitor screen preview</title>
+  <desc id="desc">A preview of the Flipper Zero Codex Monitor app showing 5H and 1W usage bars.</desc>
+  <rect width="760" height="420" fill="#f5f5f2"/>
+  <rect x="150" y="42" width="460" height="336" rx="34" fill="#202225"/>
+  <rect x="182" y="74" width="396" height="272" rx="12" fill="#d8ded1"/>
+  <rect x="206" y="104" width="348" height="212" rx="4" fill="#f8fbf1" stroke="#1a1a1a" stroke-width="3"/>
+  <text x="228" y="146" font-family="Consolas, monospace" font-size="30" fill="#111">5H</text>
+  <rect x="282" y="121" width="212" height="34" rx="3" fill="#fff" stroke="#111" stroke-width="3"/>
+  <rect x="287" y="126" width="55" height="24" rx="2" fill="#111"/>
+  <text x="508" y="146" font-family="Consolas, monospace" font-size="24" fill="#111">26% 23:38</text>
+  <text x="228" y="225" font-family="Consolas, monospace" font-size="30" fill="#111">1W</text>
+  <rect x="282" y="200" width="212" height="34" rx="3" fill="#fff" stroke="#111" stroke-width="3"/>
+  <rect x="287" y="205" width="102" height="24" rx="2" fill="#111"/>
+  <text x="508" y="225" font-family="Consolas, monospace" font-size="24" fill="#111">48% Fri</text>
+  <text x="508" y="259" font-family="Consolas, monospace" font-size="24" fill="#111">12:31</text>
+  <text x="380" y="305" text-anchor="middle" font-family="Consolas, monospace" font-size="19" fill="#111">Codex Monitor</text>
+  <circle cx="380" cy="360" r="12" fill="#121314"/>
+  <text x="380" y="34" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" fill="#3b3b3b">Flipper Zero hardware display for Codex limits</text>
+</svg>
+

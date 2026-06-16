@@ -1,5 +1,10 @@
 # Codex Monitor for Flipper Zero
 
+[![CI](https://github.com/vk0st/flipper-codex-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/vk0st/flipper-codex-monitor/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/vk0st/flipper-codex-monitor?label=release)](https://github.com/vk0st/flipper-codex-monitor/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Flipper Zero](https://img.shields.io/badge/Flipper%20Zero-FAP-black)](flipper-app)
+
 Codex Monitor turns a Flipper Zero into a tiny desk display for your Codex account limits. It shows only the two aggregate Codex windows that matter during a work session:
 
 ```text
@@ -8,6 +13,12 @@ Codex Monitor turns a Flipper Zero into a tiny desk display for your Codex accou
 ```
 
 The Flipper app is intentionally small. The PC backend reads Codex limits through the local Codex CLI app-server, formats reset times in your computer's local timezone, and sends one compact 21-byte BLE serial packet per second.
+
+![Codex Monitor screen preview](docs/assets/codex-monitor-screen.svg)
+
+## Project Status
+
+This is an early-stage OSS project with a narrow, practical scope: make Codex limits visible on dedicated hardware while keeping Codex auth and account data on the local computer. The current release is aimed at Flipper Zero users who are comfortable building a FAP and running a small Rust backend.
 
 ## What Is Inside
 
@@ -81,7 +92,12 @@ Serialized length is fixed at 21 bytes. The Flipper app does not parse JSON and 
 
 No Codex credentials are sent to the Flipper. The backend reads limits locally through the Codex CLI and transmits only percentages, reset labels, and a small status byte over BLE.
 
+## Contributing And Security
+
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, and contribution rules.
+- See [SECURITY.md](SECURITY.md) for vulnerability reporting and the security model.
+- See [ROADMAP.md](ROADMAP.md) for planned work and non-goals.
+
 ## Credits
 
 This project is derived from TheSainEyereg's Flipper PC Monitor backend and Flipper app. The BLE serial helper in the FAP is based on Willy-JL's BLE serial fix from Xtreme Apps. The original MIT license and attribution are preserved.
-
